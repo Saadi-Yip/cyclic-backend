@@ -7,24 +7,35 @@ const { transporter } = require("../../middleware/nodemailer");
 const bcrypt = require("bcryptjs");
 const ejs = require("ejs");
 
+ 
 
 /*** Login existing user ***/ 
 async function postLogin(req, res) {
-  if(!req.body.password) {
-    res.send({ message: "Password is Required!"});
-    return true;
-  }
-  let user = await User.findOne({ email: req.body.email });
-  let comp = await bcrypt.compare(req.body.password, user.password);
-  if (comp) {
-    jwt.sign({ user }, jwtkey, (err, token) => {
-      if (err) {
-        return res.send({ message: "No User Found With this Email!!!" });
-      }
-      res.send({ _id: user._id, email: user.email, token: token });
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({
+        message: "Email and Password is Required!",
+      });
+    }
+    let user = await User.findOne({ email: req.body.email });
+
+    if (!user) {
+      return res.status(400).json({ message: "User Not Found!"});
+    } 
+    let comp = await bcrypt.compare(req.body.password, user.password);
+    if (!comp) {
+      return res
+        .status(401)
+        .json({ message: "Invalid Email or Password" });
+    }
+
+    let token = jwt.sign({ user }, jwtkey); 
+    res.status(200).json({ _id: user._id, email: user.email, token: token });
+  } catch (err) {
+    res.status(400).json({
+      message: err.message,
     });
-  } else {
-    return res.status(403).send({ message: "Password is Not Valid" });
   }
 }
 

@@ -15,7 +15,7 @@ let verifyToken = (req, res, next) => {
         }
     })
   } else {
-    res.status(403).send({ message: "Token is required" });
+    res.status(403).send({ message: "You are not authorized, please provide a valid token!!" });
   }
 };
 

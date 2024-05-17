@@ -5,8 +5,10 @@ const path = require("path");
 const cors = require("cors");
 const { specs } = require("./config.js");
 const swaggerUI = require("swagger-ui-express");
-const routes = require('./routes/routes'); 
-const PORT = process.env.PORT || 9000;
+const routes = require('./routes/routes');
+const solitaryRoutes = require('./routes/solitary');
+const errorHandler = require("./controllers/errorController");
+const PORT = process.env.PORT || 5000;
 app.set("view engine", "ejs");
 
 /************** Middlewares ****************/
@@ -25,16 +27,15 @@ let corsOptions = {
   }
 app.use(cors(corsOptions));
 
+app.use (errorHandler);
 
 /************** Routes ****************/
-app.use('/' ,routes); /*** Application Route ***/ 
+app.use('/' ,routes); /*** Application Route ***/
+app.use('/solitary' ,solitaryRoutes); /*** Application Route ***/
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs)); /*** Documentation Route ***/
 
-
 /*** Listen to Port ***/
-app.listen(PORT, () =>{
-  console.log("listening on port http://localhost:" + PORT);
-});
+app.listen(PORT);
 module.exports = app;
 
 

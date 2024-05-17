@@ -3,7 +3,7 @@ const { mongoose } = require("mongoose");
 
 
 /*** Create New Address ***/
- exports.add_address = async (req, res) => {
+async function add_address(req, res) {
   try {
     const address = {
       zip_from: req.body.zip_from && Number(req.body.zip_from),
@@ -20,7 +20,7 @@ const { mongoose } = require("mongoose");
 
 
 /*** Get all Addresses from Database ***/
-exports.get_address = async (req, res) => {
+async function get_address(req, res) {
   if (!req.query.zip_code) {
     res.status(400).send({ message: "Please Enter a Zip Code" });
     return true;
@@ -55,7 +55,7 @@ exports.get_address = async (req, res) => {
 
 
 /*** Get a Single Address ***/
-exports.edit_address = async(req, res) => {
+async function edit_address(req, res) {
   Address.findById(req.params.id)
     .then((address) => res.json(address))
     .catch((err) => res.status(404).json({
@@ -66,7 +66,7 @@ exports.edit_address = async(req, res) => {
 
 
 /*** Update Previous Address ***/
-exports.update_address = async(req, res) => {
+async function update_address(req, res) {
   const id = req.params.id;
   const { zip_from, name, zip_to, providers, wired, wireless, fiber, totalProviders, rank } = req.body;
   console.log(req.body);
@@ -89,7 +89,7 @@ exports.update_address = async(req, res) => {
 
 
 /*** Remove Address ***/
-exports.remove_address= async(req, res) =>{
+function remove_address(req, res) {
   Address.findByIdAndDelete(req.params.id)
     .then((resp) => {
       res.status(200).send({ message: "address deleted successfully!" });
@@ -99,4 +99,6 @@ exports.remove_address= async(req, res) =>{
     });
 }
 
- 
+
+/*** Export All Functions ***/ 
+module.exports = { add_address, get_address, edit_address, update_address, remove_address };
